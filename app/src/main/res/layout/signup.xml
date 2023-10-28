@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_blue"
+    android:padding="16dp">
+
+    <!-- Bouton retour à l'accueil -->
+    <Button
+        android:id="@+id/returntomain_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Accueil"
+        android:background="@drawable/button_background_white"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:fontFamily="@font/noto_sans_font_family"
+        android:textFontWeight="800"/>
+
+    <!-- Titre de la page d'inscription -->
+    <TextView
+        android:id="@+id/signup_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CRÉER UN COMPTE"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_below="@id/returntomain_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:fontFamily="@font/noto_sans_font_family"
+        android:textColor="@color/black" />
+
+    <!-- Formulaire d'inscription -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/signup_title"
+        android:layout_marginTop="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Prénom -->
+            <EditText
+                android:id="@+id/name"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Prénom"
+                android:inputType="textPersonName"
+                android:minEms="2"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Nom -->
+            <EditText
+                android:id="@+id/surname"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Nom"
+                android:inputType="textPersonName"
+                android:minEms="2"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Date de naissance -->
+            <EditText
+                android:id="@+id/birthdate"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:hint="Date de naissance jj/mm/aaaa"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Email -->
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Nom d'utilisateur -->
+            <EditText
+                android:id="@+id/username"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Nom d'utilisateur"
+                android:inputType="text"
+                android:minEms="2"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Mot de passe -->
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:hint="Mot de passe"
+                android:inputType="textPassword"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:background="@drawable/button_background_white2"
+                android:padding="5dp"
+                android:layout_marginBottom="10dp"
+                />
+
+            <!-- Checkbox pour les conditions -->
+            <CheckBox
+                android:id="@+id/checkbox1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="J'ai lu et accepté les conditions d'utilisation."
+                android:checked="true"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                />
+
+            <!-- Bouton de soumission -->
+            <Button
+                android:id="@+id/submit_signup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Créer"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/noto_sans_font_family"
+                style="@style/CustomButtonStyleDarkGrey"
+                />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
