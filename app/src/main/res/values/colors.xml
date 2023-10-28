@@ -3,7 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="light_blue">#99B0F3</color>
+    <color name="light_grey">#7C7C84</color>
     <color name="yellow">#E9B522</color>
     <color name="text_onbutton">#000000</color>
     <color name="dark_grey">#475460</color>
+    <color name="dark_blue">#07297C</color>
+    <color name="dark_red">#8b0000</color>
+    <color name="standart_blue">#1554F0</color>
+
 </resources>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:weightSum="5"
+    >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_weight="2"
+        android:padding="8dp"
+        >
+
+        <ImageView
+            android:id="@+id/cryptoImage"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/button_circle_white"
+            android:layout_marginEnd="12dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/cryptoSymbol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="BTC"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:textFontWeight="800"
+                android:textSize="18sp"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/cryptoName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:text="Bitcoin" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="2"
+        android:padding="8dp"
+        >
+        <TextView
+            android:id="@+id/cryptoPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_font_family"
+            android:textFontWeight="600"
+            android:textSize="18sp"
+            android:gravity="center"
+            android:text="32325.00 €"/>
+
+        <TextView
+            android:id="@+id/cryptoPercent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/noto_sans_font_family"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="+1.52 €"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/heart"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\uf004"
+        android:textSize="20sp"
+        android:fontFamily="@font/fa_regular400"
+        android:layout_gravity="center"
+        android:gravity="center"
+        />
+
+</LinearLayout>
