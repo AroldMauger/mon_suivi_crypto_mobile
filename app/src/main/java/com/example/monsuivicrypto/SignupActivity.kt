@@ -7,10 +7,9 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.Call
 import okhttp3.Callback
-
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.Request as OkHttpRequest
 import okhttp3.Response
 import java.io.IOException
 
@@ -57,19 +56,18 @@ class SignupActivity : AppCompatActivity() {
             .add("motdepasse", motdepasse)
             .build()
 
-        val request = Request.Builder()
+        val request = OkHttpRequest.Builder()
             .url("http://10.0.2.2/api/api.php/adduser")
             .addHeader("Header-Name", "Header-Value")
             .post(requestBody)
             .build()
 
-
         client.newCall(request).enqueue(object : Callback {
             override fun onResponse(call: Call, response: Response) {
                 val responseBody = response.body?.string()
-                // Traiter la réponse
+
                 if (!response.isSuccessful) {
-                    // Gérer l'erreur
+
                 }
             }
 
@@ -78,4 +76,7 @@ class SignupActivity : AppCompatActivity() {
             }
         })
     }
+
+
+
 }

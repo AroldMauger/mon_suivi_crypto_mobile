@@ -83,6 +83,7 @@
             />
 
         <EditText
+            android:id="@+id/username"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nom d'utilisateur"
@@ -95,6 +96,7 @@
             android:background="@color/white"/>
 
         <EditText
+            android:id="@+id/motdepasse"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Mot de passe"
@@ -107,6 +109,7 @@
             android:background="@color/white"/>
 
         <Button
+            android:id="@+id/loginButton"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
