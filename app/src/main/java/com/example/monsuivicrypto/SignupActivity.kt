@@ -1,9 +1,11 @@
 package com.example.monsuivicrypto
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.Call
 import okhttp3.Callback
@@ -36,7 +38,9 @@ class SignupActivity : AppCompatActivity() {
             val motdepasse = passwordEditText.text.toString()
 
             sendDataToServer(prenom, nom, datenaissance, email, username, motdepasse)
+            showSignupConfirmationDialog(username)
         }
+
 
         val returnToMainButton: Button = findViewById(R.id.returntomain_button)
         returnToMainButton.setOnClickListener {
@@ -77,6 +81,18 @@ class SignupActivity : AppCompatActivity() {
         })
     }
 
+    private fun showSignupConfirmationDialog(username: String) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Confirmation")
+        builder.setMessage("Votre compte $username a bien été créé !")
+        builder.setPositiveButton("OK") { _, _ ->
+            val intent = Intent(this@SignupActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
 
 
 }

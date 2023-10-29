@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_blue">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nested_scroll_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:background="@color/light_blue">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- En-tête -->
+            <LinearLayout
+                android:padding="16dp"
+                android:id="@+id/headerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/dark_blue"
+                tools:ignore="ExtraText">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MON SUIVI CRYPTO"
+                    android:textColor="@color/yellow"
+                    android:textSize="18sp"
+                    android:fontFamily="@font/noto_sans_font_family"
+                    android:textFontWeight="800"
+                    android:layout_marginEnd="120dp"/>
+
+                <TextView
+                    android:id="@+id/returnToMain"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="\uf2f5"
+                    android:typeface="normal"
+                    android:padding="10dp"
+                    android:background="@drawable/button_circle_yellow"
+                    android:textSize="26sp"
+                    android:textColor="@color/yellow"
+                    android:fontFamily="@font/fa_solid900" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Liste de tous les utilisateurs du site"
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:textSize="18sp"
+                android:textColor="@color/standart_blue"
+                android:fontFamily="@font/noto_sans_font_family"
+                android:textFontWeight="800" />
+
+            <LinearLayout
+                android:id="@+id/userList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white">
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</RelativeLayout>

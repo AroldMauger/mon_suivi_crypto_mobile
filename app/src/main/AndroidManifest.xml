@@ -25,6 +25,7 @@
         </activity>
         <activity android:name=".SignupActivity"></activity>
         <activity android:name=".CryptoActivity"></activity>
+        <activity android:name=".AdminActivity"></activity>
 
     </application>
 

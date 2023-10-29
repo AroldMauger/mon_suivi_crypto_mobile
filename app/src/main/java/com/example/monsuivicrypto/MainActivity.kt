@@ -36,6 +36,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loginUser(username: String, motdepasse: String) {
+        if (username == "admincrypto" && motdepasse == "Studi20@") {
+            val intent = Intent(this@MainActivity, AdminActivity::class.java)
+            startActivity(intent)
+            finish()
+            return
+        }
         val url = "http://10.0.2.2/api/api.php/login"
 
         val stringRequest = object: StringRequest(Method.POST, url,
