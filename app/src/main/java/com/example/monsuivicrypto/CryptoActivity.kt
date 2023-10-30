@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.monsuivicrypto.api.ApiManager.api
+import com.example.monsuivicrypto.api.OnFavoriteClickListener
 import com.example.monsuivicrypto.api.CryptoAdapter
 import com.example.monsuivicrypto.data.CryptoResponse
 import org.json.JSONObject
@@ -25,11 +27,12 @@ import retrofit2.Callback
 import retrofit2.Response as RetrofitResponse
 
 class CryptoActivity : AppCompatActivity() {
-
+    private lateinit var recyclerView: RecyclerView
     private lateinit var usernameTextView: TextView
     private lateinit var emailTextView: TextView
     private lateinit var dateTextView: TextView
     private lateinit var requestQueue: RequestQueue
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.crypto)
@@ -38,7 +41,7 @@ class CryptoActivity : AppCompatActivity() {
         initViews()
         updateUIFromIntent()
         fetchCryptoData()
-
+       // loadFavorites()
         findViewById<Button>(R.id.deleteProfileButton).setOnClickListener {
             showDeleteConfirmationDialog()
         }
@@ -47,12 +50,13 @@ class CryptoActivity : AppCompatActivity() {
         }
     }
 
-
     private fun initViews() {
         usernameTextView = findViewById(R.id.username)
         emailTextView = findViewById(R.id.email)
         dateTextView = findViewById(R.id.date)
+        recyclerView = findViewById(R.id.cryptoRecyclerView)
     }
+
 
     private fun updateUIFromIntent() {
         val username = intent.getStringExtra("USERNAME")
@@ -65,21 +69,29 @@ class CryptoActivity : AppCompatActivity() {
     }
 
     private fun fetchCryptoData() {
-        api.getMarkets("eur").enqueue(object: Callback<List<CryptoResponse>> {
+        api.getMarkets("eur").enqueue(object : Callback<List<CryptoResponse>> {
             override fun onResponse(
                 call: Call<List<CryptoResponse>>,
                 response: RetrofitResponse<List<CryptoResponse>>
             ) {
                 if (response.isSuccessful) {
                     val cryptoList = response.body()!!
-                    val recyclerView: RecyclerView = findViewById(R.id.cryptoRecyclerView)
                     recyclerView.layoutManager = LinearLayoutManager(this@CryptoActivity)
-                    recyclerView.adapter = CryptoAdapter(cryptoList)
+
+                    val adapter = CryptoAdapter(cryptoList, object : OnFavoriteClickListener {
+                        override fun onFavoriteClick(symbol: String, isFavorite: Boolean, crypto: CryptoResponse) {
+                            if (isFavorite) {
+                                addToFavoritesAPI(crypto)
+                            }
+                        }
+                    })
+                    recyclerView.adapter = adapter
                     recyclerView.isNestedScrollingEnabled = false
                 }
             }
 
             override fun onFailure(call: Call<List<CryptoResponse>>, t: Throwable) {
+                // Handle failure
             }
         })
     }
@@ -162,7 +174,7 @@ class CryptoActivity : AppCompatActivity() {
         val url = "http://10.0.2.2/api/api.php/update"
 
         val params = JSONObject()
-        params.put("user_id", userId.toString()) // Ajoutez cette ligne
+        params.put("user_id", userId.toString())
         params.put("username", username)
         params.put("email", email)
         params.put("datenaissance", date)
@@ -186,5 +198,96 @@ class CryptoActivity : AppCompatActivity() {
         requestQueue.add(jsonObjectRequest )
     }
 
+    private fun addToFavoritesAPI(crypto: CryptoResponse) {
+        val userId = intent.getIntExtra("USER_ID", -1)
+        val url = "http://10.0.2.2/api/api.php/addtofavorites"
 
+        val params = JSONObject()
+        params.put("cryptoName", crypto.name)
+        params.put("cryptoPrice", crypto.current_price)
+        params.put("cryptoPercent", crypto.price_change_percentage_24h)
+
+        val requestData = JSONObject()
+        requestData.put("cryptoData", params)
+        requestData.put("userId", userId)
+
+        Log.d("DEBUG_AddToFavorites", "User ID: ${intent.getIntExtra("USER_ID", -1)}")
+        Log.d("DEBUG_AddToFavorites", "Sending data to server: $requestData")
+
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.POST, url, requestData,
+            { response ->
+                Log.d("DEBUG_AddToFavorites", "Response received: $response")
+                val success = response.getBoolean("success")
+                if (success) {
+                    Log.d("DEBUG_AddToFavorites", "Cryptocurrency added to favorites successfully.")
+                    showToast("La cryptomonnaie a bien été ajoutée aux favoris!")
+                } else {
+                    val message = response.getString("message")
+                    Log.e("DEBUG_AddToFavorites", "Error adding cryptocurrency to favorites: $message")
+                    showToast("Erreur lors de l'ajout aux favoris: $message")
+                }
+            },
+            { error ->
+                Log.e("ServerError", "Error during adding to favorites: ${error.message}")
+                showToast("Erreur lors de l'ajout aux favoris. Veuillez réessayer.")
+            }
+        )
+
+        Log.d("DEBUG_AddToFavorites", "Sending request to server...")
+
+        requestQueue.add(jsonObjectRequest)
+
+        Log.d("DEBUG_AddToFavorites", "Request sent to server.")
+    }
+
+
+    private fun showToast(message: String) {
+        runOnUiThread {
+            Toast.makeText(this@CryptoActivity, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+/*
+    private fun loadFavorites() {
+        // Remplacez ce lien par le bon lien d'API pour récupérer les favoris.
+        val url = "http://10.0.2.2/api/api.php/getfavorites"
+
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            Response.Listener<JSONObject> { response ->
+                // Transformez la réponse en liste de favoris et mettez à jour la liste.
+                // Par exemple (en supposant que la réponse est une liste de JSONObjects représentant les cryptos favoris):
+                val favoritesJSONArray = response.getJSONArray("favorites")
+                val favoritesList = mutableListOf<CryptoResponse>()
+
+                for (i in 0 until favoritesJSONArray.length()) {
+                    val item = favoritesJSONArray.getJSONObject(i)
+                    val cryptoFavorite = CryptoResponse(
+                        symbol = item.getString("symbol"),
+                        name = item.getString("name"),
+                        image = item.getString("image"),
+                        current_price = item.getDouble("current_price").toFloat(),
+                        price_change_percentage_24h = item.getDouble("price_change_percentage_24h").toFloat()
+                        // Ajoutez d'autres attributs si nécessaire
+                    )
+                    favoritesList.add(cryptoFavorite)
+                }
+
+                favoritesRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
+                favoritesRecyclerView.adapter = CryptoAdapter(favoritesList, object : OnFavoriteClickListener {
+                    override fun onFavoriteClick(symbol: String, isFavorite: Boolean, crypto: CryptoResponse) {
+                        if (isFavorite) {
+                            // Gérer le clic sur un favori si nécessaire
+                        }
+                    }
+                })
+            },
+            Response.ErrorListener { error ->
+                Log.e("ServerError", "Error fetching favorites: ${error.message}")
+            }
+        )
+
+        requestQueue.add(jsonObjectRequest)
+    }
+*/
 }

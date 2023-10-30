@@ -6,4 +6,7 @@ data class CryptoResponse(
     val image: String,
     val current_price: Float,
     val price_change_percentage_24h: Float,
-    )
+    var isFavorite: Boolean = false,
+
+)
+
