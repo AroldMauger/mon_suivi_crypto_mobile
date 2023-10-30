@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:id="@+id/favoritesLayout">
+    android:id="@+id/favoriteLayout"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:padding="30dp"
+    >
 
     <TextView
         android:layout_width="32dp"
@@ -21,7 +25,7 @@
         android:id="@+id/favoriteName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="@color/yellow"
         android:textSize="16sp"
         android:layout_gravity="center"
         android:fontFamily="@font/noto_sans_font_family"
@@ -31,7 +35,7 @@
         android:id="@+id/favoritePrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="16sp"
         android:fontFamily="@font/noto_sans_font_family"
         android:textFontWeight="800"
@@ -41,10 +45,21 @@
         android:id="@+id/favoritePercent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="16sp"
         android:fontFamily="@font/noto_sans_font_family"
         android:textFontWeight="600"
         android:layout_gravity="center"/>
+
+    <Button
+        android:id="@+id/deleteFavorite"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@drawable/button_square_red"
+        android:fontFamily="@font/fa_solid900"
+        android:text="\uf2ed"
+        android:textColor="@color/yellow"
+        android:textSize="16sp"
+        android:layout_marginTop="10dp"/>
 
 </LinearLayout>
