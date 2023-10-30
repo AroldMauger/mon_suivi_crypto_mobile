@@ -7,7 +7,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import com.android.volley.Request
+import com.android.volley.RequestQueue
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -16,9 +16,12 @@ import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var requestQueue: RequestQueue
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        requestQueue = Volley.newRequestQueue(this)
 
         val usernameEditText: EditText = findViewById(R.id.username)
         val passwordEditText: EditText = findViewById(R.id.motdepasse)
@@ -95,6 +98,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        Volley.newRequestQueue(this).add(stringRequest)
+        requestQueue.add(stringRequest)
     }
 }

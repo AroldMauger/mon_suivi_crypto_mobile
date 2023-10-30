@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:orientation="vertical">
+
+    <!-- Champ pour le nom d'utilisateur -->
+    <EditText
+        android:id="@+id/dialogUsername"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Nom d'utilisateur"
+        android:inputType="text"
+        android:text=""/>
+
+    <!-- Champ pour l'e-mail -->
+    <EditText
+        android:id="@+id/dialogEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="E-mail"
+        android:inputType="textEmailAddress"
+        android:text=""/>
+
+    <!-- Champ pour la date de naissance -->
+    <EditText
+        android:id="@+id/dialogDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date de naissance (JJ-MM-AAAA)"
+        android:inputType="date"
+        android:text=""/>
+
+</LinearLayout>

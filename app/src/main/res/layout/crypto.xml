@@ -98,7 +98,7 @@
 
                 <!-- Bouton pour mettre à jour la photo de profil -->
                 <Button
-                    android:id="@+id/updateProfilePhotoBtn"
+                    android:id="@+id/updateProfile"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:layout_marginTop="18dp"
