@@ -3,9 +3,11 @@ package com.example.monsuivicrypto
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -18,6 +20,7 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
 import com.example.monsuivicrypto.api.ApiManager.api
 import com.example.monsuivicrypto.api.OnFavoriteClickListener
 import com.example.monsuivicrypto.api.CryptoAdapter
@@ -28,6 +31,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response as RetrofitResponse
 
+
+
 class CryptoActivity : AppCompatActivity() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var usernameTextView: TextView
@@ -35,6 +40,7 @@ class CryptoActivity : AppCompatActivity() {
     private lateinit var dateTextView: TextView
     private lateinit var requestQueue: RequestQueue
     private lateinit var favoritesRecyclerView: RecyclerView
+    private var selectedCrypto: CryptoResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,6 +57,7 @@ class CryptoActivity : AppCompatActivity() {
         findViewById<Button>(R.id.updateProfile).setOnClickListener {
             showUpdateProfileDialog()
         }
+
     }
 
     private fun initViews() {
@@ -86,6 +93,11 @@ class CryptoActivity : AppCompatActivity() {
                             if (isFavorite) {
                                 addToFavoritesAPI(crypto)
                             }
+                            selectedCrypto = crypto
+                        }
+                        override fun onCryptoItemClick(crypto: CryptoResponse) {
+                            // Traitement lorsque le nom ou le symbole de la crypto est cliqué
+                            showCryptoModal(crypto)
                         }
                     })
                     recyclerView.adapter = adapter
@@ -97,6 +109,7 @@ class CryptoActivity : AppCompatActivity() {
             }
         })
     }
+
 
     private fun showDeleteConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
@@ -346,12 +359,108 @@ class CryptoActivity : AppCompatActivity() {
             }
         )
 
-         requestQueue.add(jsonObjectRequest)
+        requestQueue.add(jsonObjectRequest)
+    }
+
+    fun confirmLogout(view: View) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Êtes-vous sûr de vouloir vous déconnecter?")
+            .setPositiveButton("Oui") { dialog, _ ->
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("Non") { dialog, _ ->
+                dialog.dismiss()
+            }
+        val alertDialog = builder.create()
+        alertDialog.show()
     }
 
 
+    private fun showCryptoModal(crypto: CryptoResponse?) {
+        val modalView = LayoutInflater.from(this).inflate(R.layout.crypto_modal_layout, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(modalView)
+            .create()
+
+        val cryptoImageView = modalView.findViewById<ImageView>(R.id.imageModal)
+        cryptoImageView.setImageResource(R.drawable.avatar)
+
+        val nameModal = modalView.findViewById<TextView>(R.id.nameModal)
+     //   val chart = modalView.findViewById<LineChart>(R.id.chart)
+        val priceModal = modalView.findViewById<TextView>(R.id.priceModal)
+        val percentModal = modalView.findViewById<TextView>(R.id.percentModal)
+        val rankModal = modalView.findViewById<TextView>(R.id.rankModal)
+        val quantityModal = modalView.findViewById<TextView>(R.id.quantityModal)
+        val updateModal = modalView.findViewById<TextView>(R.id.updateModal)
+        val closeButton = modalView.findViewById<TextView>(R.id.closeModal)
+
+        crypto?.let { selectedCrypto ->
+            Glide.with(this)
+                .load(selectedCrypto.image) // Remplacez selectedCrypto.image par l'URL de l'image
+               // .placeholder(R.drawable.placeholder_image) // Image de substitution
+                //.error(R.drawable.error_image) // Image à afficher en cas d'erreur de chargement
+                .into(cryptoImageView)
+
+            nameModal.text = selectedCrypto.name
+
+            // Affichez le prix, le pourcentage de changement, le rang et d'autres données
+            priceModal.text = "Valeur en euros : ${selectedCrypto.current_price} €"
+            percentModal.text = "Variation du prix en % depuis 24H : ${selectedCrypto.price_change_percentage_24h}%"
+          //  rankModal.text = "Classement par capitalisation boursière : N°${selectedCrypto.market_cap_rank}"
+          //  quantityModal.text = "Quantité en circulation : ${selectedCrypto.circulating_supply}"
+          //  updateModal.text = "Dernière actualisation : ${selectedCrypto.last_updated}"
 
 
+            // Configurez le graphique de prix (utilisez selectedCrypto pour obtenir les données de prix et d'horodatage)
+          //  configurePriceChart(chart, selectedCrypto)
 
+            closeButton.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
+    }
+
+/*
+    private fun configurePriceChart(chart: LineChart, crypto: CryptoResponse) {
+        // Créez un ArrayList d'Entry pour stocker les données de prix
+        val entries = ArrayList<Entry>()
+
+        // Remplissez les données de prix en utilisant les données de votre CryptoResponse
+        val prices = crypto.sparkline_in_7d.price
+        for (i in prices.indices) {
+            entries.add(Entry(i.toFloat(), prices[i]))
+        }
+
+        // Créez un ensemble de données de ligne avec vos données
+        val dataSet = LineDataSet(entries, "Prix en EUR sur 7 jours")
+
+        // Personnalisez l'apparence de la ligne
+        //  dataSet.color = getColor(R.color.chartLineColor)
+        dataSet.setDrawValues(false)
+        dataSet.setDrawFilled(true)
+        // dataSet.fillDrawable = getDrawable(R.drawable.chart_fill_color)
+        //  dataSet.setCircleColor(getColor(R.color.chartCircleColor))
+
+        // Créez un objet LineData avec le dataSet
+        val lineData = LineData(dataSet)
+
+        // Configurez la description du graphique
+        val description = Description()
+        description.text = "Prix en EUR sur 7 jours"
+        chart.description = description
+
+        // Configurez l'axe X
+        chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+
+        // Définissez le graphique de données
+        chart.data = lineData
+
+        // Rafraîchissez le graphique pour qu'il soit visible
+        chart.invalidate()
+    }
+    */
 
 }

@@ -15,6 +15,7 @@ import java.util.Locale
 
 interface OnFavoriteClickListener {
     fun onFavoriteClick(symbol: String, isFavorite: Boolean, crypto: CryptoResponse)
+    fun onCryptoItemClick(crypto: CryptoResponse)
 }
 
 class CryptoAdapter(
@@ -97,6 +98,16 @@ class CryptoAdapter(
                         currentItem.isFavorite = true
                     }
                     favoriteClickListener.onFavoriteClick(currentItem.symbol, currentItem.isFavorite, currentItem)
+                }
+
+                // Ajoutez un OnClickListener au nom de la crypto
+                cryptoHolder.cryptoNameTextView.setOnClickListener {
+                    favoriteClickListener.onCryptoItemClick(currentItem)
+                }
+
+                // Ajoutez un OnClickListener au symbole de la crypto
+                cryptoHolder.cryptoSymbolTextView.setOnClickListener {
+                    favoriteClickListener.onCryptoItemClick(currentItem)
                 }
             }
             ITEM_FAVORITE -> {

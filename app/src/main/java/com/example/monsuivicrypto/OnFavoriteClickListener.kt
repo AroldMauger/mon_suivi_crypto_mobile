@@ -6,3 +6,4 @@ interface OnFavoriteClickListener {
     fun onFavoriteClick(symbol: String, isFavorite: Boolean, crypto: CryptoResponse)
 }
 
+
