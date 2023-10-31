@@ -55,14 +55,7 @@
             android:gravity="end"
             />
     </LinearLayout>
-    <!--
-       <com.github.mikephil.charting.charts.LineChart
-           android:id="@+id/chart"
-           android:layout_width="match_parent"
-           android:layout_height="300dp"
-           android:layout_below="@id/headerModal"
-           android:layout_marginTop="10dp" />
-   -->
+
        <TextView
            android:id="@+id/otherInfos"
            android:layout_width="match_parent"
@@ -74,7 +67,6 @@
            android:fontFamily="@font/noto_sans_font_family"
            android:textFontWeight="800"
            />
-    <!-- android:layout_below="@id/chart" -->
        <LinearLayout
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
@@ -103,6 +95,13 @@
                android:layout_width="match_parent"
                android:layout_height="match_parent"
                android:text="Classement par capitalisation"
+               android:layout_marginBottom="8dp"
+               />
+           <TextView
+               android:id="@+id/capitalisationModal"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:text="Capitalisation boursière"
                android:layout_marginBottom="8dp"
                />
            <TextView

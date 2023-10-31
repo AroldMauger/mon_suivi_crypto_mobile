@@ -25,7 +25,6 @@ import com.example.monsuivicrypto.api.ApiManager.api
 import com.example.monsuivicrypto.api.OnFavoriteClickListener
 import com.example.monsuivicrypto.api.CryptoAdapter
 import com.example.monsuivicrypto.data.CryptoResponse
-import org.json.JSONArray
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -294,7 +293,11 @@ class CryptoActivity : AppCompatActivity() {
                                 name = item.optString("name", ""),
                                 image = "",
                                 current_price = item.optDouble("price", 0.0).toFloat(),
-                                price_change_percentage_24h = item.optDouble("percent", 0.0).toFloat()
+                                price_change_percentage_24h = item.optDouble("percent", 0.0).toFloat(),
+                                market_cap = "",
+                                circulating_supply = "",
+                                last_updated = "",
+                                market_cap_rank = ""
                             )
 
                             favoritesList.add(cryptoFavorite)
@@ -378,43 +381,39 @@ class CryptoActivity : AppCompatActivity() {
     }
 
 
-    private fun showCryptoModal(crypto: CryptoResponse?) {
+    private fun showCryptoModal(modal: CryptoResponse?) {
         val modalView = LayoutInflater.from(this).inflate(R.layout.crypto_modal_layout, null)
         val dialog = AlertDialog.Builder(this)
             .setView(modalView)
             .create()
 
+        // Assurez-vous de récupérer les vues de la modale
         val cryptoImageView = modalView.findViewById<ImageView>(R.id.imageModal)
         cryptoImageView.setImageResource(R.drawable.avatar)
 
         val nameModal = modalView.findViewById<TextView>(R.id.nameModal)
-     //   val chart = modalView.findViewById<LineChart>(R.id.chart)
         val priceModal = modalView.findViewById<TextView>(R.id.priceModal)
         val percentModal = modalView.findViewById<TextView>(R.id.percentModal)
         val rankModal = modalView.findViewById<TextView>(R.id.rankModal)
+        val capitalisationModal = modalView.findViewById<TextView>(R.id.capitalisationModal)
         val quantityModal = modalView.findViewById<TextView>(R.id.quantityModal)
         val updateModal = modalView.findViewById<TextView>(R.id.updateModal)
         val closeButton = modalView.findViewById<TextView>(R.id.closeModal)
 
-        crypto?.let { selectedCrypto ->
+        // Vérifiez si modal est non null (sélectionné)
+        modal?.let { selectedModal ->
+            // Remplissez les données dans la modale en utilisant les propriétés de ModalResponse
             Glide.with(this)
-                .load(selectedCrypto.image) // Remplacez selectedCrypto.image par l'URL de l'image
-               // .placeholder(R.drawable.placeholder_image) // Image de substitution
-                //.error(R.drawable.error_image) // Image à afficher en cas d'erreur de chargement
+                .load(selectedModal.image) // Remplacez selectedModal.image par l'URL de l'image
                 .into(cryptoImageView)
 
-            nameModal.text = selectedCrypto.name
-
-            // Affichez le prix, le pourcentage de changement, le rang et d'autres données
-            priceModal.text = "Valeur en euros : ${selectedCrypto.current_price} €"
-            percentModal.text = "Variation du prix en % depuis 24H : ${selectedCrypto.price_change_percentage_24h}%"
-          //  rankModal.text = "Classement par capitalisation boursière : N°${selectedCrypto.market_cap_rank}"
-          //  quantityModal.text = "Quantité en circulation : ${selectedCrypto.circulating_supply}"
-          //  updateModal.text = "Dernière actualisation : ${selectedCrypto.last_updated}"
-
-
-            // Configurez le graphique de prix (utilisez selectedCrypto pour obtenir les données de prix et d'horodatage)
-          //  configurePriceChart(chart, selectedCrypto)
+            nameModal.text = selectedModal.name
+            priceModal.text = "Valeur en euros : ${selectedModal.current_price} €"
+            percentModal.text = "Variation du prix en % depuis 24H : ${selectedModal.price_change_percentage_24h}%"
+            rankModal.text = "Classement par capitalisation boursière : N°${selectedModal.market_cap_rank}"
+            capitalisationModal.text = "Capitalisation boursière : ${selectedModal.market_cap} €"
+            quantityModal.text = "Quantité en circulation : ${selectedModal.circulating_supply}"
+            updateModal.text = "Dernière actualisation : ${selectedModal.last_updated}"
 
             closeButton.setOnClickListener {
                 dialog.dismiss()
@@ -423,44 +422,45 @@ class CryptoActivity : AppCompatActivity() {
         }
     }
 
-/*
-    private fun configurePriceChart(chart: LineChart, crypto: CryptoResponse) {
-        // Créez un ArrayList d'Entry pour stocker les données de prix
-        val entries = ArrayList<Entry>()
 
-        // Remplissez les données de prix en utilisant les données de votre CryptoResponse
-        val prices = crypto.sparkline_in_7d.price
-        for (i in prices.indices) {
-            entries.add(Entry(i.toFloat(), prices[i]))
+    /*
+        private fun configurePriceChart(chart: LineChart, crypto: CryptoResponse) {
+            // Créez un ArrayList d'Entry pour stocker les données de prix
+            val entries = ArrayList<Entry>()
+
+            // Remplissez les données de prix en utilisant les données de votre CryptoResponse
+            val prices = crypto.sparkline_in_7d.price
+            for (i in prices.indices) {
+                entries.add(Entry(i.toFloat(), prices[i]))
+            }
+
+            // Créez un ensemble de données de ligne avec vos données
+            val dataSet = LineDataSet(entries, "Prix en EUR sur 7 jours")
+
+            // Personnalisez l'apparence de la ligne
+            //  dataSet.color = getColor(R.color.chartLineColor)
+            dataSet.setDrawValues(false)
+            dataSet.setDrawFilled(true)
+            // dataSet.fillDrawable = getDrawable(R.drawable.chart_fill_color)
+            //  dataSet.setCircleColor(getColor(R.color.chartCircleColor))
+
+            // Créez un objet LineData avec le dataSet
+            val lineData = LineData(dataSet)
+
+            // Configurez la description du graphique
+            val description = Description()
+            description.text = "Prix en EUR sur 7 jours"
+            chart.description = description
+
+            // Configurez l'axe X
+            chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
+
+            // Définissez le graphique de données
+            chart.data = lineData
+
+            // Rafraîchissez le graphique pour qu'il soit visible
+            chart.invalidate()
         }
-
-        // Créez un ensemble de données de ligne avec vos données
-        val dataSet = LineDataSet(entries, "Prix en EUR sur 7 jours")
-
-        // Personnalisez l'apparence de la ligne
-        //  dataSet.color = getColor(R.color.chartLineColor)
-        dataSet.setDrawValues(false)
-        dataSet.setDrawFilled(true)
-        // dataSet.fillDrawable = getDrawable(R.drawable.chart_fill_color)
-        //  dataSet.setCircleColor(getColor(R.color.chartCircleColor))
-
-        // Créez un objet LineData avec le dataSet
-        val lineData = LineData(dataSet)
-
-        // Configurez la description du graphique
-        val description = Description()
-        description.text = "Prix en EUR sur 7 jours"
-        chart.description = description
-
-        // Configurez l'axe X
-        chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-
-        // Définissez le graphique de données
-        chart.data = lineData
-
-        // Rafraîchissez le graphique pour qu'il soit visible
-        chart.invalidate()
-    }
-    */
+        */
 
 }

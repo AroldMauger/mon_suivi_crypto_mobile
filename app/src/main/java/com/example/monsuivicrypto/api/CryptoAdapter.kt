@@ -116,8 +116,8 @@ class CryptoAdapter(
 
                 // Remplissez les éléments de type favori ici
                 favoriteHolder.favoriteNameTextView.text = currentItem.favoriteName
-                favoriteHolder.favoritePriceTextView.text = currentItem.favoritePrice
-                favoriteHolder.favoritePercentTextView.text = currentItem.favoritePercent
+                favoriteHolder.favoritePriceTextView.text = currentItem.favoritePrice.toString()
+                favoriteHolder.favoritePercentTextView.text = currentItem.favoritePercent.toString()
             }
         }
     }
