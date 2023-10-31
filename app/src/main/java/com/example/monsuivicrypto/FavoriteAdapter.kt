@@ -29,17 +29,14 @@ class FavoriteAdapter(private val favoritesList: MutableList<CryptoResponse>, pr
         holder.nameTextView.text = favoriteItem.name
         holder.priceTextView.text = favoriteItem.current_price.toString()
 
-        // Pour rendre le pourcentage plus lisible, il est recommandé de formater la chaîne
         val percentageChange = String.format("%.2f%%", favoriteItem.price_change_percentage_24h)
         holder.percentTextView.text = percentageChange
 
-        // Attacher un gestionnaire d'événements au bouton de suppression
         holder.deleteButton.setOnClickListener {
             onDeleteClickListener(position)
         }
     }
 
-    // Fonction pour supprimer un élément de la liste
     fun removeItem(position: Int) {
         favoritesList.removeAt(position)
         notifyItemRemoved(position)

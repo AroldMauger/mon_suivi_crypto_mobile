@@ -3,6 +3,7 @@ package com.example.monsuivicrypto
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -221,6 +222,9 @@ class CryptoActivity : AppCompatActivity() {
                 if (success) {
                     Log.d("DEBUG_AddToFavorites", "Cryptocurrency added to favorites successfully.")
                     showToast("La cryptomonnaie a bien été ajoutée aux favoris!")
+                    loadFavorites()
+                    favoritesRecyclerView.visibility = View.VISIBLE
+
                 } else {
                     val message = response.getString("message")
                     Log.e("DEBUG_AddToFavorites", "Error adding cryptocurrency to favorites: $message")
@@ -236,7 +240,6 @@ class CryptoActivity : AppCompatActivity() {
         Log.d("DEBUG_AddToFavorites", "Sending request to server...")
 
         requestQueue.add(jsonObjectRequest)
-        loadFavorites()
         Log.d("DEBUG_AddToFavorites", "Request sent to server.")
     }
 
@@ -270,12 +273,12 @@ class CryptoActivity : AppCompatActivity() {
                     val favKey = "fav$i"
                     if (response.has(favKey)) {
                         val item = response.get(favKey)
-                        if (item is JSONObject) { // Vérifiez si c'est un objet JSON
+                        if (item is JSONObject) {
                             Log.d("loadFavorites", "Processing $favKey: $item")
 
                             val cryptoFavorite = CryptoResponse(
                                 symbol = "",
-                                name = item.optString("name", ""), // Utilisez optString pour obtenir une chaîne vide en cas de clé manquante
+                                name = item.optString("name", ""),
                                 image = "",
                                 current_price = item.optDouble("price", 0.0).toFloat(),
                                 price_change_percentage_24h = item.optDouble("percent", 0.0).toFloat()
@@ -288,7 +291,6 @@ class CryptoActivity : AppCompatActivity() {
                     }
                 }
 
-
                 if (favoritesList.isNotEmpty()) {
                     Log.d("loadFavorites", "Setting up RecyclerView with favorites list")
                     favoritesRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -298,7 +300,9 @@ class CryptoActivity : AppCompatActivity() {
                     }
                 } else {
                     Log.d("loadFavorites", "No favorites found")
+                    favoritesRecyclerView.visibility = View.GONE
                 }
+
 
             },
             { error ->
@@ -308,6 +312,7 @@ class CryptoActivity : AppCompatActivity() {
 
         requestQueue.add(jsonObjectRequest)
     }
+
 
 
 
