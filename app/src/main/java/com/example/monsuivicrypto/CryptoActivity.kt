@@ -1,6 +1,7 @@
 package com.example.monsuivicrypto
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -25,10 +26,20 @@ import com.example.monsuivicrypto.api.ApiManager.api
 import com.example.monsuivicrypto.api.OnFavoriteClickListener
 import com.example.monsuivicrypto.api.CryptoAdapter
 import com.example.monsuivicrypto.data.CryptoResponse
+import com.example.monsuivicrypto.data.MarketChartResponse
+import com.jjoe64.graphview.GraphView
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
+import com.jjoe64.graphview.series.DataPoint
+import com.jjoe64.graphview.series.LineGraphSeries
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response as RetrofitResponse
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+
 
 
 
@@ -44,6 +55,7 @@ class CryptoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.crypto)
+
         requestQueue = Volley.newRequestQueue(this)
 
         initViews()
@@ -81,7 +93,7 @@ class CryptoActivity : AppCompatActivity() {
         api.getMarkets("eur").enqueue(object : Callback<List<CryptoResponse>> {
             override fun onResponse(
                 call: Call<List<CryptoResponse>>,
-                response: RetrofitResponse<List<CryptoResponse>>
+                response: retrofit2.Response<List<CryptoResponse>>
             ) {
                 if (response.isSuccessful) {
                     val cryptoList = response.body()!!
@@ -386,8 +398,6 @@ class CryptoActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
             .setView(modalView)
             .create()
-
-        // Assurez-vous de récupérer les vues de la modale
         val cryptoImageView = modalView.findViewById<ImageView>(R.id.imageModal)
         cryptoImageView.setImageResource(R.drawable.avatar)
 
@@ -400,11 +410,9 @@ class CryptoActivity : AppCompatActivity() {
         val updateModal = modalView.findViewById<TextView>(R.id.updateModal)
         val closeButton = modalView.findViewById<TextView>(R.id.closeModal)
 
-        // Vérifiez si modal est non null (sélectionné)
         modal?.let { selectedModal ->
-            // Remplissez les données dans la modale en utilisant les propriétés de ModalResponse
             Glide.with(this)
-                .load(selectedModal.image) // Remplacez selectedModal.image par l'URL de l'image
+                .load(selectedModal.image)
                 .into(cryptoImageView)
 
             nameModal.text = selectedModal.name
@@ -415,52 +423,75 @@ class CryptoActivity : AppCompatActivity() {
             quantityModal.text = "Quantité en circulation : ${selectedModal.circulating_supply}"
             updateModal.text = "Dernière actualisation : ${selectedModal.last_updated}"
 
-            closeButton.setOnClickListener {
-                dialog.dismiss()
-            }
-            dialog.show()
+            val graph = modalView.findViewById<GraphView>(R.id.graph)
+
+            val currencyId = selectedModal.name.toLowerCase(Locale.getDefault()).replace(" ", "-")
+
+            fetchGraphData(currencyId, graph)
+
         }
+        closeButton.setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 
+    private fun fetchGraphData(currencyId: String, graph: GraphView) {
+        val days = 7
 
-    /*
-        private fun configurePriceChart(chart: LineChart, crypto: CryptoResponse) {
-            // Créez un ArrayList d'Entry pour stocker les données de prix
-            val entries = ArrayList<Entry>()
+        api.getMarketChart(currencyId, "eur", days).enqueue(object : Callback<MarketChartResponse> {
+            override fun onResponse(call: Call<MarketChartResponse>, response: RetrofitResponse <MarketChartResponse>) {
+                if (response.isSuccessful) {
+                    val marketChartResponse = response.body()
+                    val series = LineGraphSeries<DataPoint>()
+                    marketChartResponse?.prices?.forEach { priceEntry ->
+                        val xValue = Date(priceEntry[0].toLong()).time.toDouble()
+                        val yValue = priceEntry[1]
+                        series.appendData(DataPoint(xValue, yValue), true, marketChartResponse.prices.size)
+                    }
 
-            // Remplissez les données de prix en utilisant les données de votre CryptoResponse
-            val prices = crypto.sparkline_in_7d.price
-            for (i in prices.indices) {
-                entries.add(Entry(i.toFloat(), prices[i]))
+                    graph.addSeries(series)
+
+                    graph.gridLabelRenderer.labelFormatter = DateAsXAxisLabelFormatter(this@CryptoActivity, SimpleDateFormat("dd/MM"))
+                    graph.gridLabelRenderer.textSize = 30f
+                    graph.gridLabelRenderer.horizontalAxisTitle = "Date"
+                    graph.gridLabelRenderer.verticalAxisTitle = "Prix"
+                    graph.gridLabelRenderer.padding = 15
+
+                    graph.gridLabelRenderer.numHorizontalLabels = 7
+                    graph.gridLabelRenderer.numVerticalLabels = 5
+                    graph.gridLabelRenderer.gridColor = Color.LTGRAY
+                    graph.gridLabelRenderer.verticalAxisTitleColor = Color.DKGRAY
+                    graph.gridLabelRenderer.horizontalAxisTitleColor = Color.DKGRAY
+
+                    graph.setBackgroundColor(Color.parseColor("#FFE5E5E5"))
+
+                    series.color = Color.BLUE
+                    series.thickness = 3
+                    series.isDrawDataPoints = true
+                    series.dataPointsRadius = 5f
+                    series.setDrawDataPoints(true)
+
+
+
+                    graph.addSeries(series)
+
+                    val viewport = graph.viewport
+                    viewport.isXAxisBoundsManual = true
+                    viewport.setMinX(series.lowestValueX - 100000)
+                    viewport.setMaxX(series.highestValueX + 100000)
+                    viewport.isYAxisBoundsManual = true
+                    viewport.setMinY(series.lowestValueY - 10)
+                    viewport.setMaxY(series.highestValueY + 10)
+
+                    graph.invalidate()
+
+                }
             }
 
-            // Créez un ensemble de données de ligne avec vos données
-            val dataSet = LineDataSet(entries, "Prix en EUR sur 7 jours")
-
-            // Personnalisez l'apparence de la ligne
-            //  dataSet.color = getColor(R.color.chartLineColor)
-            dataSet.setDrawValues(false)
-            dataSet.setDrawFilled(true)
-            // dataSet.fillDrawable = getDrawable(R.drawable.chart_fill_color)
-            //  dataSet.setCircleColor(getColor(R.color.chartCircleColor))
-
-            // Créez un objet LineData avec le dataSet
-            val lineData = LineData(dataSet)
-
-            // Configurez la description du graphique
-            val description = Description()
-            description.text = "Prix en EUR sur 7 jours"
-            chart.description = description
-
-            // Configurez l'axe X
-            chart.xAxis.position = XAxis.XAxisPosition.BOTTOM
-
-            // Définissez le graphique de données
-            chart.data = lineData
-
-            // Rafraîchissez le graphique pour qu'il soit visible
-            chart.invalidate()
-        }
-        */
+            override fun onFailure(call: Call<MarketChartResponse>, t: Throwable) {
+            }
+        })
+    }
 
 }

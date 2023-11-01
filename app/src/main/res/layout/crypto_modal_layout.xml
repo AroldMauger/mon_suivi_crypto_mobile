@@ -56,12 +56,20 @@
             />
     </LinearLayout>
 
-       <TextView
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_margin="10dp"
+        android:layout_below="@id/headerModal"
+        />
+
+    <TextView
            android:id="@+id/otherInfos"
            android:layout_width="match_parent"
            android:layout_height="wrap_content"
            android:text="Autres informations"
-
+            android:layout_below="@id/graph"
            android:layout_marginHorizontal="20dp"
            android:layout_marginTop="20dp"
            android:fontFamily="@font/noto_sans_font_family"
