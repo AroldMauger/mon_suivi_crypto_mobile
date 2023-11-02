@@ -86,7 +86,7 @@
 
                     <!-- Image de l'utilisateur -->
                     <ImageView
-                        android:id="@+id/userAvatar"
+                        android:id="@+id/profile_image_view"
                         android:layout_width="96dp"
                         android:layout_height="96dp"
                         android:src="@drawable/avatar" />
@@ -122,7 +122,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="28dp"
-                    android:layout_toEndOf="@id/userAvatar"
+                    android:layout_toEndOf="@id/profile_image_view"
                     android:background="@color/white"
                     android:fontFamily="@font/noto_sans_font_family"
                     android:paddingStart="6dp"
@@ -139,7 +139,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="16dp"
-                    android:layout_toEndOf="@id/userAvatar"
+                    android:layout_toEndOf="@id/profile_image_view"
                     android:background="@color/white"
                     android:fontFamily="@font/noto_sans_font_family"
                     android:paddingStart="6dp"
@@ -156,7 +156,7 @@
                     android:layout_gravity="start"
                     android:layout_marginStart="50dp"
                     android:layout_marginTop="16dp"
-                    android:layout_toEndOf="@id/userAvatar"
+                    android:layout_toEndOf="@id/profile_image_view"
                     android:background="@color/white"
                     android:fontFamily="@font/noto_sans_font_family"
                     android:paddingStart="6dp"
@@ -169,8 +169,8 @@
                     android:id="@+id/deleteProfileButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_alignEnd="@id/userAvatar"
-                    android:layout_alignBottom="@id/userAvatar"
+                    android:layout_alignEnd="@id/profile_image_view"
+                    android:layout_alignBottom="@id/profile_image_view"
                     android:layout_gravity="end"
                     android:layout_marginTop="18dp"
                     android:background="@drawable/button_square_red"

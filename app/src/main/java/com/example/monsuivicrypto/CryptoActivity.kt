@@ -76,6 +76,7 @@ class CryptoActivity : AppCompatActivity() {
     private val READ_MEDIA_IMAGES = 1002
     private val REQUEST_STORAGE_PERMISSION = 1001
     private var userId: Int = -1
+    private lateinit var profileImageView: ImageView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,10 +85,17 @@ class CryptoActivity : AppCompatActivity() {
 
         requestQueue = Volley.newRequestQueue(this)
         userId = intent.getIntExtra("USER_ID", -1)
-        if (userId == -1) {
-            Log.e("CryptoActivity", "Invalid USER_ID, not passed or found.")
-            return
+        profileImageView = findViewById(R.id.profile_image_view)
+        val photoUrl = intent.getStringExtra("PHOTO")
+        if (!photoUrl.isNullOrEmpty()) {
+            Glide.with(this)
+                .load(photoUrl)
+                .placeholder(R.drawable.avatar)
+                .error(R.drawable.avatar)
+                .into(profileImageView)
         }
+
+
         initViews()
         updateUIFromIntent()
         fetchCryptoData()
@@ -622,7 +630,30 @@ class CryptoActivity : AppCompatActivity() {
                 Log.d("UploadResponse", "Response from server: $responseString")
                 try {
                     val jsonResponse = JSONObject(responseString)
-                    // Handle your JSON as before
+                    val success = jsonResponse.getBoolean("success")
+                    if (success) {
+                        // Ici nous obtenons l'URL de la nouvelle image à partir de la réponse du serveur
+                        val newImageUrl = jsonResponse.getString("imageUrl") // Remplacez par la clé réelle utilisée par votre serveur
+
+                        runOnUiThread {
+                            // Mettre à jour l'ImageView avec la nouvelle image
+                            Glide.with(this@CryptoActivity)
+                                .load(newImageUrl) // utilisez la nouvelle URL de l'image
+                                .placeholder(R.drawable.avatar) // Remplacez par votre image placeholder
+                                .error(R.drawable.avatar) // Remplacez par votre image d'erreur
+                                .into(profileImageView)
+
+                            // Afficher le dialogue de confirmation
+                            AlertDialog.Builder(this@CryptoActivity).apply {
+                                setTitle("Confirmation")
+                                setMessage("Votre photo a été modifiée avec succès!")
+                                setPositiveButton("Ok") { dialog, which ->
+                                    dialog.dismiss()
+                                }
+                                show()
+                            }
+                        }
+                    }
                 } catch (e: JSONException) {
                     Log.e("UploadResponse", "Error parsing JSON", e)
                 }

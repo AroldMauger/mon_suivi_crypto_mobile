@@ -62,6 +62,7 @@ class MainActivity : AppCompatActivity() {
                         val fav2 = userInfo.optString("fav2", null)
                         val fav3 = userInfo.optString("fav3", null)
                         val photo = userInfo.optString("photo", null)
+                        val photoUrl = if (photo != null) "http://10.0.2.2/$photo" else null
 
                         val intent = Intent(this@MainActivity, CryptoActivity::class.java)
                         intent.putExtra("USERNAME", username)
@@ -71,7 +72,7 @@ class MainActivity : AppCompatActivity() {
                         intent.putExtra("FAV1", fav1)
                         intent.putExtra("FAV2", fav2)
                         intent.putExtra("FAV3", fav3)
-                        intent.putExtra("PHOTO", photo)
+                        intent.putExtra("PHOTO", photoUrl)
 
                         startActivity(intent)
                         finish()
