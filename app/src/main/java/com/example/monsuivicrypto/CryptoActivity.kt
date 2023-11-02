@@ -21,6 +21,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.NetworkResponse
@@ -96,6 +97,11 @@ class CryptoActivity : AppCompatActivity() {
             } else {
                 requestReadExternalStoragePermission()
             }
+        }
+        val nestedScrollView = findViewById<NestedScrollView>(R.id.nested_scroll_view)
+        val returnToTopButton = findViewById<View>(R.id.returnToTop)
+        returnToTopButton.setOnClickListener {
+            nestedScrollView.smoothScrollTo(0, 0)
         }
     }
 
@@ -329,6 +335,7 @@ class CryptoActivity : AppCompatActivity() {
                             Log.d("loadFavorites", "Processing $favKey: $item")
 
                             val cryptoFavorite = CryptoResponse(
+                                id ="",
                                 symbol = "",
                                 name = item.optString("name", ""),
                                 image = "",
@@ -453,7 +460,7 @@ class CryptoActivity : AppCompatActivity() {
 
             val graph = modalView.findViewById<GraphView>(R.id.graph)
 
-            val currencyId = selectedModal.name.toLowerCase(Locale.getDefault()).replace(" ", "-")
+            val currencyId = selectedModal.id
 
             fetchGraphData(currencyId, graph)
 

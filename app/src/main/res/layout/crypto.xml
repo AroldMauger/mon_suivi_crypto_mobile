@@ -6,61 +6,66 @@
     android:layout_height="match_parent"
     android:background="@color/dark_blue">
 
+    <LinearLayout
+        android:layout_alignParentTop="true"
+        android:padding="16dp"
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:ignore="ExtraText">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MON SUIVI CRYPTO"
+            android:textColor="@color/yellow"
+            android:textSize="18sp"
+            android:fontFamily="@font/noto_sans_font_family"
+            android:textFontWeight="800"
+            android:layout_marginEnd="60dp"/>
+        <TextView
+            android:id="@+id/returnToTop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\uf007"
+            android:typeface="normal"
+            android:padding="10dp"
+            android:background="@drawable/button_circle_yellow"
+            android:textColor="@color/yellow"
+            android:textSize="26sp"
+            android:fontFamily="@font/fa_solid900"
+            android:layout_marginEnd="20dp"/>
+
+        <TextView
+            android:id="@+id/backToMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="\uf2f5"
+            android:typeface="normal"
+            android:padding="10dp"
+            android:background="@drawable/button_circle_yellow"
+            android:textSize="26sp"
+            android:textColor="@color/yellow"
+            android:fontFamily="@font/fa_solid900"
+            android:onClick="confirmLogout"/>
+
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nested_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:layout_below="@+id/headerLayout">
+
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- En-tête -->
-            <LinearLayout
-                android:padding="16dp"
-                android:id="@+id/headerLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                tools:ignore="ExtraText">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="MON SUIVI CRYPTO"
-                    android:textColor="@color/yellow"
-                    android:textSize="18sp"
-                    android:fontFamily="@font/noto_sans_font_family"
-                    android:textFontWeight="800"
-                    android:layout_marginEnd="60dp"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="\uf007"
-                    android:typeface="normal"
-                    android:padding="10dp"
-                    android:background="@drawable/button_circle_yellow"
-                    android:textColor="@color/yellow"
-                    android:textSize="26sp"
-                    android:fontFamily="@font/fa_solid900"
-                    android:layout_marginEnd="20dp"/>
-
-                <TextView
-                    android:id="@+id/backToMain"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="\uf2f5"
-                    android:typeface="normal"
-                    android:padding="10dp"
-                    android:background="@drawable/button_circle_yellow"
-                    android:textSize="26sp"
-                    android:textColor="@color/yellow"
-                    android:fontFamily="@font/fa_solid900"
-                    android:onClick="confirmLogout"/>
-
-            </LinearLayout>
 
             <!-- Conteneur de l'utilisateur -->
             <LinearLayout

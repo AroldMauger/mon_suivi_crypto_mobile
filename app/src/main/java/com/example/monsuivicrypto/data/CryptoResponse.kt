@@ -1,6 +1,7 @@
 package com.example.monsuivicrypto.data
 
 data class CryptoResponse(
+    val id : String,
     val name: String,
     val symbol: String,
     val image: String,
