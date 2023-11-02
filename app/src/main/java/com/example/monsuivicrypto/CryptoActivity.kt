@@ -1,8 +1,14 @@
 package com.example.monsuivicrypto
-
+import android.Manifest
+import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.database.Cursor
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +17,13 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -31,9 +40,17 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
+import retrofit2.Retrofit
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
+import java.io.File
 import retrofit2.Response as RetrofitResponse
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -51,6 +68,10 @@ class CryptoActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
     private lateinit var favoritesRecyclerView: RecyclerView
     private var selectedCrypto: CryptoResponse? = null
+    private val REQUEST_CODE_IMAGE_PICK = 100
+    private val READ_MEDIA_IMAGES = 1002
+    private val REQUEST_STORAGE_PERMISSION = 1001
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +89,14 @@ class CryptoActivity : AppCompatActivity() {
         findViewById<Button>(R.id.updateProfile).setOnClickListener {
             showUpdateProfileDialog()
         }
-
+        val changeAvatarButton: Button = findViewById(R.id.changeAvatarButton)
+        changeAvatarButton.setOnClickListener {
+            if (hasReadExternalStoragePermission()) {
+                openGallery()
+            } else {
+                requestReadExternalStoragePermission()
+            }
+        }
     }
 
     private fun initViews() {
@@ -492,6 +520,89 @@ class CryptoActivity : AppCompatActivity() {
             override fun onFailure(call: Call<MarketChartResponse>, t: Throwable) {
             }
         })
+    }
+
+    private fun hasReadExternalStoragePermission() =
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+
+    private fun requestReadExternalStoragePermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+            READ_MEDIA_IMAGES
+        )
+    }
+
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == READ_MEDIA_IMAGES) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openGallery()
+            } else {
+                Toast.makeText(this, "Permission nécessaire pour accéder à la galerie", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val uri = result.data?.data
+            val filePath = getPathFromUri(uri)
+            filePath?.let {
+                val file = File(it)
+                uploadImageToServer(file)
+            }
+        }
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        imagePickerLauncher.launch(intent)
+    }
+
+
+    private fun getPathFromUri(uri: Uri?): String? {
+        val projection = arrayOf(MediaStore.Images.Media.DATA)
+        val cursor: Cursor? = contentResolver.query(uri!!, projection, null, null, null)
+        cursor?.use {
+            it.moveToFirst()
+            val columnIndex = it.getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            return it.getString(columnIndex)
+        }
+        return null
+    }
+
+    private fun uploadImageToServer(file: File) {
+        val url = "http://10.0.2.2/api/api.php/uploadpicture"
+
+        val volleyMultipartRequest = object : VolleyMultipartRequest(
+            Request.Method.POST,
+            url,
+            Response.Listener<NetworkResponse> { response ->
+                Log.d("ServerResponse", "Received response: $response")
+
+                val resultResponse = String(response.data)
+                val jsonResponse = JSONObject(resultResponse)
+                if (jsonResponse.optBoolean("success", false)) {
+                    findViewById<ImageView>(R.id.userAvatar).setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+                }
+            },
+            Response.ErrorListener { error ->
+                error.networkResponse?.let {
+                    val networkResponse = String(it.data)
+                    Log.e("ServerError", "Error during upload: $networkResponse")
+                }
+            }) {
+            override fun getByteData(): MutableMap<String, DataPart> {
+                val params = HashMap<String, DataPart>()
+                params["profileImage"] = DataPart(file.name, file.readBytes(), "image/png")
+                return params
+            }
+        }
+        Volley.newRequestQueue(this).add(volleyMultipartRequest)
     }
 
 }
