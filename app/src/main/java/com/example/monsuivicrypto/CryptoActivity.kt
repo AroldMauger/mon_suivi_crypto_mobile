@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -44,6 +45,7 @@ import com.jjoe64.graphview.series.LineGraphSeries
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -52,6 +54,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import java.io.File
+import java.nio.charset.StandardCharsets
 import retrofit2.Response as RetrofitResponse
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -72,6 +75,7 @@ class CryptoActivity : AppCompatActivity() {
     private val REQUEST_CODE_IMAGE_PICK = 100
     private val READ_MEDIA_IMAGES = 1002
     private val REQUEST_STORAGE_PERMISSION = 1001
+    private var userId: Int = -1
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +83,11 @@ class CryptoActivity : AppCompatActivity() {
         setContentView(R.layout.crypto)
 
         requestQueue = Volley.newRequestQueue(this)
-
+        userId = intent.getIntExtra("USER_ID", -1)
+        if (userId == -1) {
+            Log.e("CryptoActivity", "Invalid USER_ID, not passed or found.")
+            return
+        }
         initViews()
         updateUIFromIntent()
         fetchCryptoData()
@@ -581,35 +589,66 @@ class CryptoActivity : AppCompatActivity() {
         }
         return null
     }
-
     private fun uploadImageToServer(file: File) {
         val url = "http://10.0.2.2/api/api.php/uploadpicture"
+        val userId = intent.getIntExtra("USER_ID", -1)
+        if (userId == -1) {
+            Log.e("UploadError", "USER_ID is not passed correctly.")
+            return
+        }
+        Log.d("UploadInfo", "User ID: $userId")
 
-        val volleyMultipartRequest = object : VolleyMultipartRequest(
-            Request.Method.POST,
+        val imageBytes = file.readBytes()
+        val imageBase64String = Base64.encodeToString(imageBytes, Base64.NO_WRAP)
+
+        val jsonBody = JSONObject()
+        try {
+            jsonBody.put("user_id", userId)
+            jsonBody.put("profileImage", imageBase64String)
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error creating JSON body.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val requestBody = jsonBody.toString().toByteArray(Charsets.UTF_8)
+
+        val volleyBase64Request = object : VolleyBase64Request(
+            Method.POST,
             url,
-            Response.Listener<NetworkResponse> { response ->
-                Log.d("ServerResponse", "Received response: $response")
-
-                val resultResponse = String(response.data)
-                val jsonResponse = JSONObject(resultResponse)
-                if (jsonResponse.optBoolean("success", false)) {
-                    findViewById<ImageView>(R.id.userAvatar).setImageBitmap(BitmapFactory.decodeFile(file.absolutePath))
+            Response.Listener { response ->
+                // Handle response here
+                val responseString = String(response.data, Charsets.UTF_8)
+                Log.d("UploadResponse", "Response from server: $responseString")
+                try {
+                    val jsonResponse = JSONObject(responseString)
+                    // Handle your JSON as before
+                } catch (e: JSONException) {
+                    Log.e("UploadResponse", "Error parsing JSON", e)
                 }
             },
             Response.ErrorListener { error ->
+                // Handle error here
                 error.networkResponse?.let {
-                    val networkResponse = String(it.data)
-                    Log.e("ServerError", "Error during upload: $networkResponse")
+                    val errorData = String(it.data, Charsets.UTF_8)
+                    Log.e("UploadError", "Error response from server: $errorData")
                 }
-            }) {
-            override fun getByteData(): MutableMap<String, DataPart> {
-                val params = HashMap<String, DataPart>()
-                params["profileImage"] = DataPart(file.name, file.readBytes(), "image/png")
-                return params
+                Log.e("UploadError", "Volley error: ${error.localizedMessage}")
+                Toast.makeText(this, "Error: ${error.localizedMessage}", Toast.LENGTH_SHORT).show()
+            }
+        ) {
+            override fun getBodyContentType(): String {
+                return "application/json; charset=utf-8"
+            }
+
+            override fun getBody(): ByteArray {
+                return requestBody
             }
         }
-        Volley.newRequestQueue(this).add(volleyMultipartRequest)
+
+        // Add the request to Volley's RequestQueue
+        Volley.newRequestQueue(this).add(volleyBase64Request)
     }
+
 
 }
