@@ -1,10 +1,13 @@
 package com.example.monsuivicrypto
 
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.Call
@@ -14,6 +17,9 @@ import okhttp3.OkHttpClient
 import okhttp3.Request as OkHttpRequest
 import okhttp3.Response
 import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class SignupActivity : AppCompatActivity() {
 
@@ -28,6 +34,11 @@ class SignupActivity : AppCompatActivity() {
         val usernameEditText: EditText = findViewById(R.id.username)
         val passwordEditText: EditText = findViewById(R.id.password)
         val submitButton: Button = findViewById(R.id.submit_signup)
+        val checkbox: CheckBox = findViewById(R.id.checkbox1)
+
+        datenaissanceEditText.setOnClickListener {
+            showDatePickerDialog(datenaissanceEditText)
+        }
 
         submitButton.setOnClickListener {
             val prenom = prenomEditText.text.toString()
@@ -37,10 +48,14 @@ class SignupActivity : AppCompatActivity() {
             val username = usernameEditText.text.toString()
             val motdepasse = passwordEditText.text.toString()
 
-            sendDataToServer(prenom, nom, datenaissance, email, username, motdepasse)
-            showSignupConfirmationDialog(username)
-        }
 
+            if (prenom.isNotEmpty() && nom.isNotEmpty() && datenaissance.isNotEmpty() && email.isNotEmpty() && username.isNotEmpty() && motdepasse.isNotEmpty() && checkbox.isChecked) {
+                sendDataToServer(prenom, nom, datenaissance, email, username, motdepasse)
+                showSignupConfirmationDialog(username)
+            } else {
+                Toast.makeText(this@SignupActivity, "Veuillez remplir tous les champs et accepter les conditions d'utilisation.", Toast.LENGTH_LONG).show()
+            }
+        }
 
         val returnToMainButton: Button = findViewById(R.id.returntomain_button)
         returnToMainButton.setOnClickListener {
@@ -94,5 +109,21 @@ class SignupActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    private fun showDatePickerDialog(datenaissanceEditText: EditText) {
+        val calendar = Calendar.getInstance()
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
 
+        val datePickerDialog = DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+            val selectedDate = Calendar.getInstance()
+            selectedDate.set(selectedYear, selectedMonth, selectedDay)
+            val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
+            datenaissanceEditText.setText(dateFormat.format(selectedDate.time))
+        }, year, month, day)
+
+        datePickerDialog.datePicker.maxDate = calendar.timeInMillis
+
+        datePickerDialog.show()
+    }
 }

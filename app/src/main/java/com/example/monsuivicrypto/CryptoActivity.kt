@@ -5,13 +5,11 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
-import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.text.Html
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
@@ -20,7 +18,6 @@ import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -30,12 +27,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.text.HtmlCompat
 import androidx.core.text.buildSpannedString
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.android.volley.NetworkResponse
 import com.android.volley.Request
 import com.android.volley.RequestQueue
 import com.android.volley.Response
@@ -52,22 +47,13 @@ import com.jjoe64.graphview.GraphView
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter
 import com.jjoe64.graphview.series.DataPoint
 import com.jjoe64.graphview.series.LineGraphSeries
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
-import retrofit2.Retrofit
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
 import java.io.File
-import java.nio.charset.StandardCharsets
 import retrofit2.Response as RetrofitResponse
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
@@ -81,9 +67,7 @@ class CryptoActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
     private lateinit var favoritesRecyclerView: RecyclerView
     private var selectedCrypto: CryptoResponse? = null
-    private val REQUEST_CODE_IMAGE_PICK = 100
     private val READ_MEDIA_IMAGES = 1002
-    private val REQUEST_STORAGE_PERMISSION = 1001
     private var userId: Int = -1
     private lateinit var profileImageView: ImageView
 
@@ -688,25 +672,22 @@ class CryptoActivity : AppCompatActivity() {
             Method.POST,
             url,
             Response.Listener { response ->
-                // Handle response here
                 val responseString = String(response.data, Charsets.UTF_8)
                 Log.d("UploadResponse", "Response from server: $responseString")
                 try {
                     val jsonResponse = JSONObject(responseString)
                     val success = jsonResponse.getBoolean("success")
                     if (success) {
-                        // Ici nous obtenons l'URL de la nouvelle image à partir de la réponse du serveur
-                        val newImageUrl = jsonResponse.getString("imageUrl") // Remplacez par la clé réelle utilisée par votre serveur
+                        val newImageUrl = jsonResponse.getString("imageUrl")
 
                         runOnUiThread {
-                            // Mettre à jour l'ImageView avec la nouvelle image
+
                             Glide.with(this@CryptoActivity)
-                                .load(newImageUrl) // utilisez la nouvelle URL de l'image
-                                .placeholder(R.drawable.avatar) // Remplacez par votre image placeholder
-                                .error(R.drawable.avatar) // Remplacez par votre image d'erreur
+                                .load(newImageUrl)
+                                .placeholder(R.drawable.avatar)
+                                .error(R.drawable.avatar)
                                 .into(profileImageView)
 
-                            // Afficher le dialogue de confirmation
                             AlertDialog.Builder(this@CryptoActivity).apply {
                                 setTitle("Confirmation")
                                 setMessage("Votre photo a été modifiée avec succès!")
@@ -722,7 +703,6 @@ class CryptoActivity : AppCompatActivity() {
                 }
             },
             Response.ErrorListener { error ->
-                // Handle error here
                 error.networkResponse?.let {
                     val errorData = String(it.data, Charsets.UTF_8)
                     Log.e("UploadError", "Error response from server: $errorData")
@@ -739,8 +719,6 @@ class CryptoActivity : AppCompatActivity() {
                 return requestBody
             }
         }
-
-        // Add the request to Volley's RequestQueue
         Volley.newRequestQueue(this).add(volleyBase64Request)
     }
 
