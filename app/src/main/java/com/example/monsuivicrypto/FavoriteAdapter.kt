@@ -1,5 +1,6 @@
 package com.example.monsuivicrypto
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,7 @@ class FavoriteAdapter(private val favoritesList: MutableList<CryptoResponse>, pr
         val nameTextView: TextView = itemView.findViewById(R.id.favoriteName)
         val priceTextView: TextView = itemView.findViewById(R.id.favoritePrice)
         val percentTextView: TextView = itemView.findViewById(R.id.favoritePercent)
-        val deleteButton: Button = itemView.findViewById(R.id.deleteFavorite)
+        val deleteButton: TextView = itemView.findViewById(R.id.deleteFavorite)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteViewHolder {
@@ -27,10 +28,22 @@ class FavoriteAdapter(private val favoritesList: MutableList<CryptoResponse>, pr
         val favoriteItem = favoritesList[position]
 
         holder.nameTextView.text = favoriteItem.name
-        holder.priceTextView.text = favoriteItem.current_price.toString()
+        holder.priceTextView.text = String.format("%.2f", favoriteItem.current_price) + "€"
 
-        val percentageChange = String.format("%.2f%%", favoriteItem.price_change_percentage_24h)
-        holder.percentTextView.text = percentageChange
+        val percentageChangeText = if (favoriteItem.price_change_percentage_24h < 0) {
+            String.format("%.2f%%", favoriteItem.price_change_percentage_24h)
+        } else {
+            String.format("+%.2f%%", favoriteItem.price_change_percentage_24h)
+        }
+        holder.percentTextView.text = percentageChangeText
+
+        val percentColor = if (favoriteItem.price_change_percentage_24h < 0) {
+            Color.RED
+        } else {
+            Color.GREEN
+        }
+        holder.percentTextView.setTextColor(percentColor)
+
 
         holder.deleteButton.setOnClickListener {
             onDeleteClickListener(position)

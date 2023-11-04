@@ -1,14 +1,21 @@
 package com.example.monsuivicrypto
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Html
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +29,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.text.HtmlCompat
+import androidx.core.text.buildSpannedString
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -60,8 +70,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
-
+import java.util.TimeZone
 
 
 class CryptoActivity : AppCompatActivity() {
@@ -100,13 +109,13 @@ class CryptoActivity : AppCompatActivity() {
         updateUIFromIntent()
         fetchCryptoData()
         loadFavorites()
-        findViewById<Button>(R.id.deleteProfileButton).setOnClickListener {
+        findViewById<TextView>(R.id.deleteProfileButton).setOnClickListener {
             showDeleteConfirmationDialog()
         }
-        findViewById<Button>(R.id.updateProfile).setOnClickListener {
+        findViewById<TextView>(R.id.updateProfile).setOnClickListener {
             showUpdateProfileDialog()
         }
-        val changeAvatarButton: Button = findViewById(R.id.changeAvatarButton)
+        val changeAvatarButton: TextView = findViewById(R.id.changeAvatarButton)
         changeAvatarButton.setOnClickListener {
             if (hasReadExternalStoragePermission()) {
                 openGallery()
@@ -157,7 +166,6 @@ class CryptoActivity : AppCompatActivity() {
                             selectedCrypto = crypto
                         }
                         override fun onCryptoItemClick(crypto: CryptoResponse) {
-                            // Traitement lorsque le nom ou le symbole de la crypto est cliqué
                             showCryptoModal(crypto)
                         }
                     })
@@ -444,11 +452,13 @@ class CryptoActivity : AppCompatActivity() {
     }
 
 
+    @SuppressLint("SetTextI18n")
     private fun showCryptoModal(modal: CryptoResponse?) {
         val modalView = LayoutInflater.from(this).inflate(R.layout.crypto_modal_layout, null)
         val dialog = AlertDialog.Builder(this)
             .setView(modalView)
             .create()
+
         val cryptoImageView = modalView.findViewById<ImageView>(R.id.imageModal)
         cryptoImageView.setImageResource(R.drawable.avatar)
 
@@ -466,26 +476,79 @@ class CryptoActivity : AppCompatActivity() {
                 .load(selectedModal.image)
                 .into(cryptoImageView)
 
+            fun formatBold(value: String): SpannableString {
+                val spannable = SpannableString(value)
+                spannable.setSpan(StyleSpan(Typeface.BOLD), 0, value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                return spannable
+            }
+
+            fun formatBoldWithColor(value: String, color: Int): SpannableString {
+                val spannable = SpannableString(value)
+                spannable.setSpan(StyleSpan(Typeface.BOLD), 0, value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                spannable.setSpan(ForegroundColorSpan(color), 0, value.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                return spannable
+            }
+
+            fun formatDate(dateString: String): String {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+                val outputFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                val date = inputFormat.parse(dateString)
+                return outputFormat.format(date ?: "")
+            }
+
             nameModal.text = selectedModal.name
-            priceModal.text = "Valeur en euros : ${selectedModal.current_price} €"
-            percentModal.text = "Variation du prix en % depuis 24H : ${selectedModal.price_change_percentage_24h}%"
-            rankModal.text = "Classement par capitalisation boursière : N°${selectedModal.market_cap_rank}"
-            capitalisationModal.text = "Capitalisation boursière : ${selectedModal.market_cap} €"
-            quantityModal.text = "Quantité en circulation : ${selectedModal.circulating_supply}"
-            updateModal.text = "Dernière actualisation : ${selectedModal.last_updated}"
+            priceModal.text = buildSpannedString {
+                append("Valeur en euros : ")
+                append(formatBold(String.format("%.2f€", selectedModal.current_price)))
+            }
+
+            val percentageColor = if (selectedModal.price_change_percentage_24h < 0)
+                ContextCompat.getColor(this, android.R.color.holo_red_dark)
+            else
+                ContextCompat.getColor(this, android.R.color.holo_green_dark)
+
+            percentModal.text = buildSpannedString {
+                append("Variation du prix en % depuis 24H : ")
+                append(formatBoldWithColor(
+                    String.format("%.2f%%", selectedModal.price_change_percentage_24h),
+                    percentageColor
+                ))
+            }
+
+            rankModal.text = buildSpannedString {
+                append("Classement par capitalisation boursière : N°")
+                append(formatBold(selectedModal.market_cap_rank.toString()))
+            }
+
+            capitalisationModal.text = buildSpannedString {
+                append("Capitalisation boursière : ")
+                append(formatBold("${selectedModal.market_cap}€"))
+            }
+
+            quantityModal.text = buildSpannedString {
+                append("Quantité en circulation : ")
+                append(formatBold(selectedModal.circulating_supply.toString()))
+            }
+
+            updateModal.text = buildSpannedString {
+                append("Dernière actualisation : ")
+                append(formatBold(formatDate(selectedModal.last_updated)))
+            }
 
             val graph = modalView.findViewById<GraphView>(R.id.graph)
-
             val currencyId = selectedModal.id
-
             fetchGraphData(currencyId, graph)
-
         }
+
         closeButton.setOnClickListener {
             dialog.dismiss()
         }
+
         dialog.show()
     }
+
+
 
     private fun fetchGraphData(currencyId: String, graph: GraphView) {
         val days = 7

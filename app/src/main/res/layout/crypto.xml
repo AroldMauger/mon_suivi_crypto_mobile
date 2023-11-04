@@ -26,8 +26,9 @@
             android:layout_marginEnd="60dp"/>
         <TextView
             android:id="@+id/returnToTop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:gravity="center"
             android:text="\uf007"
             android:typeface="normal"
             android:padding="10dp"
@@ -39,8 +40,9 @@
 
         <TextView
             android:id="@+id/backToMain"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:gravity="center"
             android:text="\uf2f5"
             android:typeface="normal"
             android:padding="10dp"
@@ -92,19 +94,20 @@
                         android:src="@drawable/avatar" />
 
                     <!-- Bouton avec le symbole + -->
-                    <Button
+                    <TextView
                         android:id="@+id/changeAvatarButton"
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:gravity="center"
                         android:layout_gravity="top"
-                        android:background="@drawable/button_square_red_light"
+                        android:background="@drawable/button_square_red"
                         android:text="+"
                         android:textColor="@color/yellow" />
 
                 </FrameLayout>
 
                 <!-- Bouton pour mettre à jour la photo de profil -->
-                <Button
+                <TextView
                     android:id="@+id/updateProfile"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -113,7 +116,8 @@
                     android:fontFamily="@font/fa_solid900"
                     android:text="\uf4ff"
                     android:textColor="@color/yellow"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:gravity="center"/>
 
                 <TextView
                     android:id="@+id/username"
@@ -165,7 +169,7 @@
                     android:textFontWeight="800"
                     android:textSize="16sp" />
 
-                <Button
+                <TextView
                     android:id="@+id/deleteProfileButton"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
@@ -177,7 +181,8 @@
                     android:fontFamily="@font/fa_solid900"
                     android:text="\uf2ed"
                     android:textColor="@color/yellow"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:gravity="center"/>
 
             </LinearLayout>
 

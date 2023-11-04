@@ -13,8 +13,3 @@ data class CryptoResponse(
     val circulating_supply: String,
     val last_updated: String
 )
-/*
-
-
-)
-*/

@@ -51,15 +51,16 @@
         android:textFontWeight="600"
         android:layout_gravity="center"/>
 
-    <Button
+    <TextView
         android:id="@+id/deleteFavorite"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:background="@drawable/button_square_red"
         android:fontFamily="@font/fa_solid900"
         android:text="\uf2ed"
         android:textColor="@color/yellow"
-        android:textSize="16sp"
-        android:layout_marginTop="10dp"/>
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:gravity="center"/>
 
 </LinearLayout>

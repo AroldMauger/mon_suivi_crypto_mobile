@@ -1,5 +1,6 @@
 package com.example.monsuivicrypto.api
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,9 +73,25 @@ class CryptoAdapter(
 
                 cryptoHolder.cryptoSymbolTextView.text = currentItem.symbol.uppercase(Locale.ROOT)
                 cryptoHolder.cryptoNameTextView.text = currentItem.name
-                cryptoHolder.cryptoPriceTextView.text = currentItem.current_price.toString()
-                cryptoHolder.cryptoPercentTextView.text = currentItem.price_change_percentage_24h.toString()
+                cryptoHolder.cryptoPriceTextView.text = String.format("%.2f€", currentItem.current_price)
+                val percentChange = currentItem.price_change_percentage_24h
+                val percentText = if (percentChange < 0) {
+                    // Pourcentage négatif
+                    String.format("%.2f%%", percentChange)
+                } else {
+                    // Pourcentage positif
+                    String.format("+%.2f%%", percentChange)
+                }
 
+                // Définir la couleur en fonction du pourcentage positif ou négatif
+                val percentColor = if (percentChange < 0) {
+                    Color.RED
+                } else {
+                    Color.GREEN
+                }
+
+                cryptoHolder.cryptoPercentTextView.text = percentText
+                cryptoHolder.cryptoPercentTextView.setTextColor(percentColor)
                 if (favorites.contains(currentItem.symbol)) {
                     cryptoHolder.heartTextView.setTypeface(ResourcesCompat.getFont(cryptoHolder.itemView.context, R.font.fa_solid900))
                     cryptoHolder.heartTextView.setTextColor(ResourcesCompat.getColor(cryptoHolder.itemView.context.resources, R.color.black, null))

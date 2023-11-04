@@ -9,7 +9,7 @@
     <EditText
         android:id="@+id/dialogUsername"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="Nom d'utilisateur"
         android:inputType="text"
         android:text=""/>
@@ -18,7 +18,7 @@
     <EditText
         android:id="@+id/dialogEmail"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
         android:text=""/>
@@ -27,7 +27,7 @@
     <EditText
         android:id="@+id/dialogDate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:hint="Date de naissance (JJ-MM-AAAA)"
         android:inputType="date"
         android:text=""/>
