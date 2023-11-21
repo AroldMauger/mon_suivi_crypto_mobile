@@ -76,7 +76,7 @@ class SignupActivity : AppCompatActivity() {
             .build()
 
         val request = OkHttpRequest.Builder()
-            .url("http://10.0.2.2/api/api.php/adduser")
+            .url("https://mon-suivi-crypto.alwaysdata.net/api/api.php/adduser")
             .addHeader("Header-Name", "Header-Value")
             .post(requestBody)
             .build()

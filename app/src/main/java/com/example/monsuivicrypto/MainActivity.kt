@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             finish()
             return
         }
-        val url = "http://10.0.2.2/api/api.php/login"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/login"
 
         val stringRequest = object: StringRequest(Method.POST, url,
             Response.Listener<String> { response ->
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                         val fav2 = userInfo.optString("fav2", null)
                         val fav3 = userInfo.optString("fav3", null)
                         val photo = userInfo.optString("photo", null)
-                        val photoUrl = if (photo != null) "http://10.0.2.2/$photo" else null
+                        val photoUrl = if (photo != null) "https://mon-suivi-crypto.alwaysdata.net/$photo" else null
 
                         val intent = Intent(this@MainActivity, CryptoActivity::class.java)
                         intent.putExtra("USERNAME", username)

@@ -67,7 +67,7 @@ class CryptoActivity : AppCompatActivity() {
     private lateinit var requestQueue: RequestQueue
     private lateinit var favoritesRecyclerView: RecyclerView
     private var selectedCrypto: CryptoResponse? = null
-    private val READ_MEDIA_IMAGES = 1002
+    private val READ_EXTERNAL_STORAGE = 1002
     private var userId: Int = -1
     private lateinit var profileImageView: ImageView
 
@@ -180,7 +180,7 @@ class CryptoActivity : AppCompatActivity() {
 
     private fun deleteUserAccount() {
         val userId = intent.getIntExtra("USER_ID", -1)
-        val url = "http://10.0.2.2/api/api.php/delete"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/delete"
 
         val stringRequest = object : StringRequest(
             Request.Method.POST, url,
@@ -240,7 +240,7 @@ class CryptoActivity : AppCompatActivity() {
 
     private fun updateProfileAPI(username: String, email: String, date: String) {
         val userId = intent.getIntExtra("USER_ID", -1)
-        val url = "http://10.0.2.2/api/api.php/update"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/update"
 
         val params = JSONObject()
         params.put("user_id", userId.toString())
@@ -266,7 +266,7 @@ class CryptoActivity : AppCompatActivity() {
 
     private fun addToFavoritesAPI(crypto: CryptoResponse) {
         val userId = intent.getIntExtra("USER_ID", -1)
-        val url = "http://10.0.2.2/api/api.php/addtofavorites"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/addtofavorites"
 
         val params = JSONObject()
         params.put("cryptoName", crypto.name)
@@ -322,7 +322,7 @@ class CryptoActivity : AppCompatActivity() {
             return
         }
 
-        val url = "http://10.0.2.2/api/api.php/getfavorites"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/getfavorites"
         Log.d("loadFavorites", "Request URL: $url")
 
         val params = JSONObject()
@@ -389,7 +389,7 @@ class CryptoActivity : AppCompatActivity() {
 
 
     private fun deleteFavoriteFromAPI(userId: Int, cryptoName: String) {
-        val url = "http://10.0.2.2/api/api.php/deletefavorite"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/deletefavorite"
 
         val params = JSONObject()
         params.put("userId", userId)
@@ -593,13 +593,13 @@ class CryptoActivity : AppCompatActivity() {
     }
 
     private fun hasReadExternalStoragePermission() =
-        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED
+        ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
 
     private fun requestReadExternalStoragePermission() {
         ActivityCompat.requestPermissions(
             this,
-            arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-            READ_MEDIA_IMAGES
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+            READ_EXTERNAL_STORAGE
         )
     }
 
@@ -607,7 +607,7 @@ class CryptoActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == READ_MEDIA_IMAGES) {
+        if (requestCode == READ_EXTERNAL_STORAGE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openGallery()
             } else {
@@ -645,7 +645,7 @@ class CryptoActivity : AppCompatActivity() {
         return null
     }
     private fun uploadImageToServer(file: File) {
-        val url = "http://10.0.2.2/api/api.php/uploadpicture"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/uploadpicture"
         val userId = intent.getIntExtra("USER_ID", -1)
         if (userId == -1) {
             Log.e("UploadError", "USER_ID is not passed correctly.")

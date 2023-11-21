@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
@@ -37,13 +38,13 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun fetchUsers() {
-        val url = "http://10.0.2.2/api/api.php/admin"
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/admin"
 
         val request = JsonArrayRequest(Request.Method.GET, url, null,
-            Response.Listener<JSONArray> { response ->
+            { response ->
                 displayUsers(response)
             },
-            Response.ErrorListener { error ->
+            { error ->
             }
         )
         Volley.newRequestQueue(this).add(request)
@@ -70,14 +71,30 @@ class AdminActivity : AppCompatActivity() {
     }
 
     private fun deleteUser(userId: String) {
-        val url = "http://10.0.2.2/api/api.php/admin_deleteuser"
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Confirmation de suppression")
+        builder.setMessage("Êtes-vous sûr de vouloir supprimer cet utilisateur ?")
+
+        builder.setPositiveButton("Oui") { _, _ ->
+            performUserDeletion(userId)
+        }
+
+        builder.setNegativeButton("Non") { dialog, _ ->
+            dialog.dismiss()
+        }
+
+        val alert = builder.create()
+        alert.show()
+    }
+
+    private fun performUserDeletion(userId: String) {
+        val url = "https://mon-suivi-crypto.alwaysdata.net/api/api.php/admin_deleteuser"
 
         val stringRequest = object : StringRequest(Method.POST, url,
             Response.Listener<String> { response ->
                 val jsonResponse = JSONObject(response)
                 if (jsonResponse.getBoolean("success")) {
                     Toast.makeText(this, jsonResponse.getString("message"), Toast.LENGTH_SHORT).show()
-
                     fetchUsers()
                 } else {
                     Toast.makeText(this, jsonResponse.getString("message"), Toast.LENGTH_SHORT).show()
@@ -95,4 +112,5 @@ class AdminActivity : AppCompatActivity() {
 
         Volley.newRequestQueue(this).add(stringRequest)
     }
+
 }
